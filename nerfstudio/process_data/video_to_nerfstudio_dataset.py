@@ -16,7 +16,7 @@
 
 import shutil
 from dataclasses import dataclass
-from typing import Literal, Optional
+from typing import Literal, Optional, Tuple
 
 from nerfstudio.process_data import equirect_utils, process_data_utils
 from nerfstudio.process_data.colmap_converter_to_nerfstudio_dataset import ColmapConverterToNerfstudioDataset
@@ -46,7 +46,7 @@ class VideoToNerfstudioDataset(ColmapConverterToNerfstudioDataset):
     eval_random_seed: Optional[int] = None
     """Random seed to select video frames for eval set"""
 
-    def main(self) -> None:
+    def main(self) -> Tuple[int, int]:
         """Process video into a nerfstudio dataset."""
 
         summary_log = []
@@ -144,9 +144,14 @@ class VideoToNerfstudioDataset(ColmapConverterToNerfstudioDataset):
         image_id_to_depth_path, log_tmp = self._export_depth()
         summary_log += log_tmp
 
-        summary_log += self._save_transforms(num_extracted_frames, image_id_to_depth_path, mask_path)
+        save_transforms_summary_log, num_frames, num_matched_frames = self._save_transforms(
+            num_extracted_frames, image_id_to_depth_path, mask_path
+        )
+        summary_log += save_transforms_summary_log
 
         CONSOLE.log("[bold green]:tada: :tada: :tada: All DONE :tada: :tada: :tada:")
 
         for summary in summary_log:
             CONSOLE.log(summary)
+
+        return num_frames, num_matched_frames

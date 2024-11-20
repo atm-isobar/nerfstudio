@@ -123,7 +123,7 @@ class ColmapConverterToNerfstudioDataset(BaseConverterToNerfstudioDataset):
         image_id_to_depth_path: Optional[Dict[int, Path]] = None,
         camera_mask_path: Optional[Path] = None,
         image_rename_map: Optional[Dict[str, str]] = None,
-    ) -> List[str]:
+    ) -> Tuple[List[str], int, int]:
         """Save colmap transforms into the output folder
 
         Args:
@@ -148,7 +148,7 @@ class ColmapConverterToNerfstudioDataset(BaseConverterToNerfstudioDataset):
             CONSOLE.log(
                 "[bold yellow]Warning: Could not find existing COLMAP results. " "Not generating transforms.json"
             )
-        return summary_log
+        return summary_log, num_frames, num_matched_frames
 
     def _export_depth(self) -> Tuple[Optional[Dict[int, Path]], List[str]]:
         """If SFM is used for creating depth image, this method will create the depth images from image in
