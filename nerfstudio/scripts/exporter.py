@@ -315,6 +315,8 @@ class ExportPoissonMesh(Exporter):
     """Target number of faces for the mesh to texture."""
     std_ratio: float = 10.0
     """Threshold based on STD of the average distances across the point cloud to remove outliers."""
+    mesh_file_name: str = "poisson_mesh.ply"
+    """Name of the mesh file to save."""
 
     def main(self) -> None:
         """Export mesh"""
@@ -370,7 +372,7 @@ class ExportPoissonMesh(Exporter):
         CONSOLE.print("[bold green]:white_check_mark: Computing Mesh")
 
         CONSOLE.print("Saving Mesh...")
-        o3d.io.write_triangle_mesh(str(self.output_dir / "poisson_mesh.ply"), mesh)
+        o3d.io.write_triangle_mesh(str(self.output_dir / self.mesh_file_name), mesh)
         print("\033[A\033[A")
         CONSOLE.print("[bold green]:white_check_mark: Saving Mesh")
 
@@ -379,7 +381,7 @@ class ExportPoissonMesh(Exporter):
         if self.texture_method == "nerf":
             # load the mesh from the poisson reconstruction
             mesh = get_mesh_from_filename(
-                str(self.output_dir / "poisson_mesh.ply"), target_num_faces=self.target_num_faces
+                str(self.output_dir / self.mesh_file_name), target_num_faces=self.target_num_faces
             )
             CONSOLE.print("Texturing mesh with NeRF")
             texture_utils.export_textured_mesh(
